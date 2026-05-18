@@ -1,4 +1,4 @@
-"""Utilities to prepare the MovieLens recommendation dataset."""
+"""Utilidades para preparar el dataset de recomendaciones MovieLens."""
 
 from pathlib import Path
 
@@ -21,7 +21,7 @@ REQUIRED_MOVIES_COLUMNS = {"movieId", "title", "genres"}
 
 
 def load_movielens_data(data_dir="data", ratings_file="ratings.csv", movies_file="movies.csv"):
-    """Load MovieLens ratings and movies files from a local data folder."""
+    """Carga los archivos ratings y movies desde la carpeta local data/."""
     data_path = Path(data_dir)
     ratings_path = data_path / ratings_file
     movies_path = data_path / movies_file
@@ -47,12 +47,12 @@ def load_movielens_data(data_dir="data", ratings_file="ratings.csv", movies_file
 
 
 def get_movie_rating_stats(ratings):
-    """Calculate number of ratings and average rating per movie."""
+    """Calcula el número de ratings y la valoración media por película."""
     return ratings.groupby("movieId")["rating"].agg(["count", "mean"]).reset_index()
 
 
 def filter_ratings(ratings, min_movie_ratings=20, min_user_ratings=10):
-    """Keep popular movies and active users to make recommendations more reliable."""
+    """Filtra películas populares y usuarios activos para mejorar la fiabilidad."""
     movie_stats = get_movie_rating_stats(ratings)
     popular_movie_ids = movie_stats.loc[
         movie_stats["count"] >= min_movie_ratings, "movieId"
@@ -71,7 +71,7 @@ def filter_ratings(ratings, min_movie_ratings=20, min_user_ratings=10):
 
 
 def build_user_movie_matrix(ratings):
-    """Create a user-movie matrix with users as rows and movies as columns."""
+    """Construye la matriz usuario-película."""
     return ratings.pivot_table(
         index="userId",
         columns="movieId",
@@ -81,7 +81,7 @@ def build_user_movie_matrix(ratings):
 
 
 def build_item_similarity_matrix(user_movie_matrix):
-    """Calculate item-item cosine similarity from the user-movie matrix."""
+    """Calcula la similitud del coseno entre películas."""
     movie_user_matrix = user_movie_matrix.T
     matrix_values = movie_user_matrix.values
 
@@ -101,7 +101,7 @@ def build_item_similarity_matrix(user_movie_matrix):
 
 
 def build_dataset_summary(ratings, movies, filtered_ratings, user_movie_matrix, similarity_df):
-    """Return key numbers used by the app and project documentation."""
+    """Genera métricas descriptivas del dataset procesado."""
     total_possible = user_movie_matrix.shape[0] * user_movie_matrix.shape[1]
     non_zero = int((user_movie_matrix.values > 0).sum())
     density = non_zero / total_possible if total_possible else 0
@@ -123,7 +123,7 @@ def prepare_recommender_data(
     min_movie_ratings=20,
     min_user_ratings=10,
 ):
-    """Run the full data preparation pipeline for the recommender."""
+    """Ejecuta el pipeline completo de preparación del recomendador."""
     ratings, movies = load_movielens_data(data_dir=data_dir)
     filtered_ratings = filter_ratings(
         ratings,

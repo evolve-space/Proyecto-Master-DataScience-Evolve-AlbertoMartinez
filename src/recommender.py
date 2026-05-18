@@ -1,10 +1,10 @@
-"""Simple item-based movie recommender."""
+"""Sistema de recomendación de películas basado en similitud entre ítems."""
 
 import pandas as pd
 
 
 class MovieRecommender:
-    """Recommend movies using an item-item cosine similarity matrix."""
+    """Genera recomendaciones usando similitud del coseno entre películas."""
 
     def __init__(self, similarity_df, movies_df):
         self.similarity_df = similarity_df
@@ -12,7 +12,7 @@ class MovieRecommender:
         self.available_movie_ids = set(similarity_df.index)
 
     def get_movie_info(self, movie_id):
-        """Return title and genres for a movie id."""
+        """Obtiene el título y géneros de una película."""
         movie = self.movies_df[self.movies_df["movieId"] == movie_id]
         if movie.empty:
             return None
@@ -25,7 +25,7 @@ class MovieRecommender:
         }
 
     def search_movies(self, title_query, max_results=10):
-        """Search available movies by partial title, case-insensitive."""
+        """Busca películas disponibles por coincidencia parcial del título."""
         if not title_query:
             return []
 
@@ -51,7 +51,7 @@ class MovieRecommender:
         ]
 
     def recommend_by_id(self, movie_id, top_n=10):
-        """Return the most similar movies to the selected movie id."""
+        """Devuelve las películas más similares a la seleccionada."""
         if movie_id not in self.available_movie_ids:
             raise ValueError(f"La película con ID {movie_id} no está disponible.")
 
@@ -68,7 +68,7 @@ class MovieRecommender:
         return recommendations
 
     def recommend_by_title(self, title_query, top_n=10):
-        """Search the first matching movie and return recommendations for it."""
+        """Busca una película y genera recomendaciones asociadas."""
         matches = self.search_movies(title_query, max_results=1)
         if not matches:
             raise ValueError(f"No se encontraron películas con el título '{title_query}'.")
@@ -80,7 +80,7 @@ class MovieRecommender:
 
 
 def recommendations_to_dataframe(recommendations):
-    """Convert recommendation dictionaries into a presentation-friendly DataFrame."""
+    """Convierte las recomendaciones en un DataFrame para visualización."""
     return pd.DataFrame(
         [
             {
